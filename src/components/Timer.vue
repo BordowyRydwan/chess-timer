@@ -2,28 +2,95 @@
   <div class="timer">
     <div class="timer__counter-container">
       <p name="time_left">
-        21:37:05
+        {{displayTimeLeft}} <span class="miliseconds">{{displayMsLeft}}</span>
       </p>
       <p name="time_right">
-        21:37:05
+        {{displayTimeRight}} <span class="miliseconds">{{displayMsRight}}</span>
       </p>
     </div>
     <div class="timer__buttons">
-      <button name="time_substract">-</button>
-      <button name="time_add">+</button>
-      <button name="pause">PAUSE</button>
-      <button name="stop">STOP</button>
+      <button name="time_substract" @click="subtractMinute">-</button>
+      <button name="time_add" @click="addMinute">+</button>
+      <button name="pause">⏯︎</button>
+      <button name="stop">⏹︎</button>
     </div>
   </div>
 </template>
 
 <script>
+const MILISECONDS_IN_HOUR = 1000 * 60 * 60;
+const MILISECONDS_IN_MINUTE = 1000 * 60;
+const MILISECONDS_IN_SECOND = 1000;
+
 export default {
   name: 'Timer',
   data(){
     return{
-      timeLeft: 360,
-      timeRight: 360
+      timeLeft: 300000,
+      timeRight: 300000,
+      turn: 0,
+    }
+  },
+  computed: {
+    displayTimeLeft: function () {
+      return this.timeFromMiliseconds(this.timeLeft).time;
+    },
+
+    displayMsLeft: function () {
+      return this.timeFromMiliseconds(this.timeLeft).ms;
+    },
+
+    displayTimeRight: function () {
+      return this.timeFromMiliseconds(this.timeRight).time;
+    },
+
+    displayMsRight: function () {
+      return this.timeFromMiliseconds(this.timeRight).ms;
+    } 
+  },
+  methods: {
+    timeFromMiliseconds: function (totalMiliseconds) {
+      const hours = this.fillString(Math.floor(totalMiliseconds / MILISECONDS_IN_HOUR), 2);
+      const minutes = this.fillString(Math.floor(totalMiliseconds / MILISECONDS_IN_MINUTE) % 60, 2);
+      const seconds = this.fillString(Math.floor(totalMiliseconds / MILISECONDS_IN_SECOND) % 60, 2);
+      const miliseconds = this.fillString(totalMiliseconds % 1000, 3);
+
+      return {
+        time: `${hours}:${minutes}:${seconds}`,
+        ms: miliseconds
+      };
+    },
+
+    fillString: function (num, size) { 
+      const diff = size - num.toString().length;
+
+      if(diff >= 0){
+        return '0'.repeat(diff) + num;
+      }
+      else {
+        throw new Error('Size has to be greater or equal to num');
+      }
+    },
+
+    addMinute: function () {
+      this.timeLeft += MILISECONDS_IN_MINUTE;
+      this.timeRight += MILISECONDS_IN_MINUTE;
+    },
+
+    subtractMinute: function () {
+      if(this.timeLeft <= MILISECONDS_IN_MINUTE){
+        this.timeLeft = 0;
+      }
+      else{
+        this.timeLeft -= MILISECONDS_IN_MINUTE;
+      }
+
+      if(this.timeRight <= MILISECONDS_IN_MINUTE){
+        this.timeRight = 0;
+      }
+      else{
+        this.timeRight -= MILISECONDS_IN_MINUTE;
+      }
     }
   }
 }
@@ -92,6 +159,12 @@ export default {
 
       font-size: 3rem;
     }
+  }
+
+  .miliseconds{
+    font-size: 0.8rem;
+    text-decoration: underline;
+    transform: translateY(-50%);
   }
 
   .timer__buttons{
