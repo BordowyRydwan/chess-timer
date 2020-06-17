@@ -48,10 +48,10 @@ export default {
       margin: 0 15px;
       width: auto;
 
-      transition-duration: 0.3s;
+      transition-duration: 0.2s;
 
       &:hover{
-        transform: translateY(-6px);
+        transform: translateY(-4px);
       }
     }
   }

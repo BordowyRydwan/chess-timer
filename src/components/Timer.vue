@@ -1,5 +1,8 @@
 <template>
   <div class="timer">
+    <button class="timer__switch" name="left"></button>
+    <button class="timer__switch" name="right"></button>
+
     <div class="timer__counter-container">
       <p name="time_left">
         {{displayTimeLeft}} <span class="miliseconds">{{displayMsLeft}}</span>
@@ -11,13 +14,15 @@
     <div class="timer__buttons">
       <button name="time_substract" @click="subtractMinute">-</button>
       <button name="time_add" @click="addMinute">+</button>
-      <button name="pause">⏯︎</button>
-      <button name="stop">⏹︎</button>
+      <button name="pause" @click="handleStartButton">⏯︎</button>
+      <button name="stop" @click="resetGame">⏹︎</button>
     </div>
   </div>
 </template>
 
 <script>
+import { mapActions, mapState } from 'vuex';
+
 const MILISECONDS_IN_HOUR = 1000 * 60 * 60;
 const MILISECONDS_IN_MINUTE = 1000 * 60;
 const MILISECONDS_IN_SECOND = 1000;
@@ -26,12 +31,20 @@ export default {
   name: 'Timer',
   data(){
     return{
-      timeLeft: 300000,
-      timeRight: 300000,
-      turn: 0,
+      intervalLeft: null,
+      intervalRight: null
     }
   },
   computed: {
+    ...mapState(
+      [
+        'timeLeft',
+        'timeRight',
+        'turnPlayer1',
+        'turnPlayer2',
+      ]
+    ),
+
     displayTimeLeft: function () {
       return this.timeFromMiliseconds(this.timeLeft).time;
     },
@@ -49,6 +62,14 @@ export default {
     } 
   },
   methods: {
+    
+    ...mapActions([
+      'addTime',
+      'subtractTime',
+      'setTime',
+      'switchTurn'
+    ]),
+
     timeFromMiliseconds: function (totalMiliseconds) {
       const hours = this.fillString(Math.floor(totalMiliseconds / MILISECONDS_IN_HOUR), 2);
       const minutes = this.fillString(Math.floor(totalMiliseconds / MILISECONDS_IN_MINUTE) % 60, 2);
@@ -69,27 +90,90 @@ export default {
       }
       else {
         throw new Error('Size has to be greater or equal to num');
+
       }
     },
 
     addMinute: function () {
-      this.timeLeft += MILISECONDS_IN_MINUTE;
-      this.timeRight += MILISECONDS_IN_MINUTE;
+      this.addTime({
+        player: 1,
+        time: MILISECONDS_IN_MINUTE
+      });
+
+      this.addTime({
+        player: 2,
+        time: MILISECONDS_IN_MINUTE
+      });
     },
 
     subtractMinute: function () {
       if(this.timeLeft <= MILISECONDS_IN_MINUTE){
-        this.timeLeft = 0;
+        this.setTime({
+          player: 1,
+          time: 0
+        });
       }
       else{
-        this.timeLeft -= MILISECONDS_IN_MINUTE;
+        this.subtractTime({
+          player: 1,
+          time: MILISECONDS_IN_MINUTE
+        });
       }
 
       if(this.timeRight <= MILISECONDS_IN_MINUTE){
-        this.timeRight = 0;
+        this.setTime({
+          player: 2,
+          time: 0
+        });
       }
       else{
-        this.timeRight -= MILISECONDS_IN_MINUTE;
+        this.subtractTime({
+          player: 2,
+          time: MILISECONDS_IN_MINUTE
+        });
+      }
+    },
+
+    resetGame: function () {
+      this.setTime({
+        player: 1,
+        time: 5 * MILISECONDS_IN_MINUTE
+      });
+
+      this.setTime({
+        player: 2,
+        time: 5 * MILISECONDS_IN_MINUTE
+      });
+    },
+
+    handleStartButton: function (){
+      if(this.turnPlayer1 === false && this.turnPlayer2 === false){
+        this.intervalLeft = setInterval(() => {
+          this.setTime(1, this.timeLeft - 10)
+        }, 10)
+      }
+    }
+  },
+
+  watch: {
+    turnPlayer1: function () {
+      const button = document.querySelector('.timer__switch[name="left"]');
+
+      if(this.turnPlayer1 === true){
+        button.style.top = "-20px";
+      }
+      else{
+        button.style.top = "-50px";
+      }
+    },
+    turnPlayer2: function () {
+      const button = document.querySelector('.timer__switch[name="right"]');
+
+      if(this.turnPlayer2 === true){
+        button.style.top = "-20px";
+      }
+      else{
+        button.style.top = "-50px";
       }
     }
   }
@@ -111,34 +195,32 @@ export default {
     position: relative;
 
     margin-top: 18vh;
+  }
 
-    &::before{
-      content: '';
-      width: 20%;
-      height: 100px;
+  .timer__switch[name="left"]{
+    width: 20%;
+    height: 100px;
 
-      background-color: #C70808;
+    background-color: #C70808;
 
-      position: absolute;
-      top: -50px;
-      left: 10%;
+    position: absolute;
+    top: -50px;
+    left: 10%;
 
-      z-index: -1;
-    }
+    z-index: -1;
+  }
 
-    &::after{
-      content: '';
-      width: 20%;
-      height: 100px;
+  .timer__switch[name="right"]{
+    width: 20%;
+    height: 100px;
 
-      background-color: #C70808;
+    background-color: #C70808;
 
-      position: absolute;
-      top: -50px;
-      right: 10%;
+    position: absolute;
+    top: -50px;
+    right: 10%;
 
-      z-index: -1;
-    }
+    z-index: -1;
   }
 
   .timer__counter-container{
