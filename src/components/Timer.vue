@@ -100,39 +100,39 @@ export default {
     addMinute: function () {
       this.addTime({
         player: 1,
-        time: MILISECONDS_IN_MINUTE
+        time: MILISECONDS_IN_MINUTE / 2
       });
 
       this.addTime({
         player: 2,
-        time: MILISECONDS_IN_MINUTE
+        time: MILISECONDS_IN_MINUTE / 2
       });
     },
 
     subtractMinute: function () {
-      if(this.timeLeft <= 2 * MILISECONDS_IN_MINUTE){
+      if(this.timeLeft <= MILISECONDS_IN_MINUTE){
         this.setTime({
           player: 1,
-          time: MILISECONDS_IN_MINUTE
+          time: MILISECONDS_IN_MINUTE / 2
         });
       }
       else{
         this.subtractTime({
           player: 1,
-          time: MILISECONDS_IN_MINUTE
+          time: MILISECONDS_IN_MINUTE / 2
         });
       }
 
-      if(this.timeRight <= 2 * MILISECONDS_IN_MINUTE){
+      if(this.timeRight <= MILISECONDS_IN_MINUTE){
         this.setTime({
           player: 2,
-          time: MILISECONDS_IN_MINUTE
+          time: MILISECONDS_IN_MINUTE / 2
         });
       }
       else{
         this.subtractTime({
           player: 2,
-          time: MILISECONDS_IN_MINUTE
+          time: MILISECONDS_IN_MINUTE / 2
         });
       }
     },
@@ -288,33 +288,34 @@ export default {
     margin-top: 18vh;
   }
 
-  .timer__switch[name="left"]{
+  .timer__switch{
     width: 20%;
     height: 50px;
 
     background-color: #C70808;
+    
+    box-shadow: 0;
+    border: 0;
 
+    cursor: pointer;
+
+    &:disabled{
+      cursor: default; 
+    }
+
+    transition-duration: 0.1s;
+  }
+
+  .timer__switch[name="left"]{
     position: absolute;
     top: -50px;
     left: 10%;
-
-    box-shadow: 0;
-    border: 0;
   }
 
   .timer__switch[name="right"]{
-    width: 20%;
-    height: 50px;
-
-    background-color: #C70808;
-
     position: absolute;
     top: -50px;
     right: 10%;
-
-    box-shadow: 0;
-    border: 0;
-
   }
 
   .timer__counter-container{
@@ -364,6 +365,7 @@ export default {
       height: 100%;
 
       font-size: 1.15rem;
+      transition-duration: 0.1s;
 
       display: flex;
       align-items: center;
@@ -375,8 +377,10 @@ export default {
       }
 
       &:disabled{
-        background-color: #474747;
+        background-color: #636363;
       }
+
+      cursor: pointer;
     }
 
     .paused{

@@ -36,7 +36,11 @@ export default {
     color: #3F3E3E;
 
     padding-bottom: 20px;
-    font-size: 0.9rem;
+    font-size: 0.75rem;
+
+    p{
+      transition-duration: 0.1s;
+    }
   }
 
   .social-icons{
@@ -44,8 +48,8 @@ export default {
     justify-content: space-between;
     
     img{
-      height: 30px;
-      margin: 0 15px;
+      height: 25px;
+      margin: 3px 15px;
       width: auto;
 
       transition-duration: 0.2s;
@@ -53,6 +57,13 @@ export default {
       &:hover{
         transform: translateY(-4px);
       }
+    }
+  }
+
+  .footer--dark{
+    p{
+      color: rgb(241, 241, 241);
+      transition-duration: 0.1s;
     }
   }
 </style>

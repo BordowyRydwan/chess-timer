@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <dark-mode-button />
+    <dark-mode-button :isDarkMode="isDarkMode" />
     <h1>
       CHESS TIMER
     </h1>
@@ -30,6 +30,14 @@ export default {
       isDarkMode: false,
     }
   },
+  watch: {
+    isDarkMode: function(){
+      document.querySelector('h1').classList.toggle('h1--dark');
+      document.querySelector('h2').classList.toggle('h2--dark');
+      document.querySelector('#app').classList.toggle('app--dark');
+      document.querySelector('footer').classList.toggle('footer--dark');
+    }
+  }
 
 }
 </script>
@@ -47,12 +55,14 @@ export default {
 #app {
   font-family: 'Poppins', sans-serif;
 
-  height: 100%;
-  min-height: 100%;
+  height: 100vh;
+  min-height: 100vh;
 
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  transition-duration: 0.1s;
 }
 
 h1, h2{
@@ -69,5 +79,19 @@ h2{
   margin-top: -15px;
   color: #6D6D6D;
   font-weight: normal;
+}
+
+.h1--dark{
+  color: white;
+  transition-duration: 0.2s;
+}
+
+.h2--dark{
+  color: white;
+  transition-duration: 0.2s;
+}
+
+.app--dark{
+  background-color: rgb(49, 49, 49);
 }
 </style>

@@ -1,15 +1,34 @@
 <template>
-  <button @click="toggleDarkMode">
-    <img :src="require('../assets/darkmode_btn.png')" alt="GitHub">
+  <button @click="toggleDarkMode" class="darkmode_switch">
+    <img :src="require(`../assets/${imageName}`)" alt="GitHub">
   </button>
 </template>
 
 <script>
 export default {
   name: 'DarkModeButton',
+  props: {
+    isDarkMode: Boolean,
+  },
   methods: {
     toggleDarkMode: function () {
-      this.$parent.isDarkMode = !this.$parent.isDarkMode
+      this.$parent.isDarkMode = !this.$parent.isDarkMode;
+
+      window.focus();
+      
+      if (document.activeElement) {
+        document.activeElement.blur();
+      }
+    }
+  },
+  computed: {
+    imageName: function () {
+      if(this.isDarkMode === true){
+        return 'lightmode_btn.png';
+      }
+      else{
+        return 'darkmode_btn.png';
+      }
     }
   }
 }
@@ -27,6 +46,8 @@ export default {
     box-shadow: 0;
     background: none;
     border: 0;
+
+    cursor: pointer;
   }
 
   img{
