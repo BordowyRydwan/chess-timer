@@ -1,7 +1,7 @@
 <template>
   <div class="timer">
-    <button class="timer__switch" name="left"></button>
-    <button class="timer__switch" name="right"></button>
+    <button class="timer__switch" name="left" :disabled="turnPlayer1 || isPaused || !isStarted" @click="switchTurn()"></button>
+    <button class="timer__switch" name="right" :disabled="turnPlayer2 || isPaused || !isStarted" @click="switchTurn()"></button>
 
     <div class="timer__counter-container">
       <p name="time_left">
@@ -12,9 +12,9 @@
       </p>
     </div>
     <div class="timer__buttons">
-      <button name="time_substract" @click="subtractMinute">-</button>
-      <button name="time_add" @click="addMinute">+</button>
-      <button name="pause" @click="handleStartButton">⏯︎</button>
+      <button name="time_substract" @click="subtractMinute" :disabled="turnPlayer1 || turnPlayer2">-</button>
+      <button name="time_add" @click="addMinute" :disabled="turnPlayer1 || turnPlayer2">+</button>
+      <button name="pause" @click="handleStartButton" :class="isPaused ? 'paused' : ''">⏯︎</button>
       <button name="stop" @click="resetGame">⏹︎</button>
     </div>
   </div>
@@ -32,7 +32,9 @@ export default {
   data(){
     return{
       intervalLeft: null,
-      intervalRight: null
+      intervalRight: null,
+      isPaused: false,
+      isStarted: false,
     }
   },
   computed: {
@@ -67,7 +69,8 @@ export default {
       'addTime',
       'subtractTime',
       'setTime',
-      'switchTurn'
+      'switchTurn',
+      'resetTurns'
     ]),
 
     timeFromMiliseconds: function (totalMiliseconds) {
@@ -107,10 +110,10 @@ export default {
     },
 
     subtractMinute: function () {
-      if(this.timeLeft <= MILISECONDS_IN_MINUTE){
+      if(this.timeLeft <= 2 * MILISECONDS_IN_MINUTE){
         this.setTime({
           player: 1,
-          time: 0
+          time: MILISECONDS_IN_MINUTE
         });
       }
       else{
@@ -120,10 +123,10 @@ export default {
         });
       }
 
-      if(this.timeRight <= MILISECONDS_IN_MINUTE){
+      if(this.timeRight <= 2 * MILISECONDS_IN_MINUTE){
         this.setTime({
           player: 2,
-          time: 0
+          time: MILISECONDS_IN_MINUTE
         });
       }
       else{
@@ -135,6 +138,9 @@ export default {
     },
 
     resetGame: function () {
+      clearInterval(this.intervalLeft);
+      clearInterval(this.intervalRight);
+
       this.setTime({
         player: 1,
         time: 5 * MILISECONDS_IN_MINUTE
@@ -144,13 +150,58 @@ export default {
         player: 2,
         time: 5 * MILISECONDS_IN_MINUTE
       });
+
+      this.resetTurns();
+      this.removeFocus();
+      this.isPaused = false;
+      this.isStarted = false;
     },
 
     handleStartButton: function (){
       if(this.turnPlayer1 === false && this.turnPlayer2 === false){
-        this.intervalLeft = setInterval(() => {
-          this.setTime(1, this.timeLeft - 10)
-        }, 10)
+        this.switchTurn();
+        this.isStarted = true;
+      }
+      else if((this.turnPlayer1 === true || this.turnPlayer2 === true) && this.isPaused === false){
+        clearInterval(this.intervalLeft);
+        clearInterval(this.intervalRight);
+
+        this.isPaused = true;
+      }
+      else if((this.turnPlayer1 === true || this.turnPlayer2 === true) && this.isPaused === true){
+        this.isPaused = false;
+
+        if(this.turnPlayer1 === true && this.turnPlayer2 === false){
+          this.intervalLeft = setInterval(() => {
+            this.subtractTime({
+              player: 1,
+              time: 10
+            })
+          }, 10)
+        }
+
+        if(this.turnPlayer1 === false && this.turnPlayer2 === true){
+          this.intervalRight = setInterval(() => {
+            this.subtractTime({
+              player: 2,
+              time: 10
+            })
+          }, 10)
+        }
+      }
+      else{
+        clearInterval(this.intervalLeft);
+        clearInterval(this.intervalRight);
+      }
+
+      this.removeFocus();
+    },
+
+    removeFocus: function(){
+      window.focus();
+      
+      if (document.activeElement) {
+        document.activeElement.blur();
       }
     }
   },
@@ -160,22 +211,62 @@ export default {
       const button = document.querySelector('.timer__switch[name="left"]');
 
       if(this.turnPlayer1 === true){
-        button.style.top = "-20px";
-      }
+        button.style.height = "20px";
+        button.style.top = "-20px"
+
+        clearInterval(this.intervalRight);
+
+        this.intervalLeft = setInterval(() => {
+          this.subtractTime({
+            player: 1,
+            time: 10
+          })
+        }, 10);
+        }
       else{
-        button.style.top = "-50px";
+        button.style.height = '50px';
+        button.style.top = "-50px"
       }
+
     },
+
     turnPlayer2: function () {
       const button = document.querySelector('.timer__switch[name="right"]');
 
       if(this.turnPlayer2 === true){
-        button.style.top = "-20px";
+        button.style.height = "20px";
+        button.style.top = "-20px"
+
+        clearInterval(this.intervalLeft);
+
+        this.intervalRight = setInterval(() => {
+          this.subtractTime({
+            player: 2,
+            time: 10
+          })
+        }, 10);
       }
       else{
-        button.style.top = "-50px";
+        button.style.height = "50px";
+        button.style.top = "-50px"
       }
+
     }
+  },
+
+  mounted: function() {
+    document.addEventListener('keypress', e => {
+      if(e.code === 'Space' && this.isPaused === false){
+        this.switchTurn();
+        this.isStarted = true;
+      }
+    });
+
+    document.addEventListener('keypress', e => {
+      if(e.code === 'Enter'){
+        this.resetGame();
+      }
+    });
   }
 }
 </script>
@@ -199,7 +290,7 @@ export default {
 
   .timer__switch[name="left"]{
     width: 20%;
-    height: 100px;
+    height: 50px;
 
     background-color: #C70808;
 
@@ -207,12 +298,13 @@ export default {
     top: -50px;
     left: 10%;
 
-    z-index: -1;
+    box-shadow: 0;
+    border: 0;
   }
 
   .timer__switch[name="right"]{
     width: 20%;
-    height: 100px;
+    height: 50px;
 
     background-color: #C70808;
 
@@ -220,7 +312,9 @@ export default {
     top: -50px;
     right: 10%;
 
-    z-index: -1;
+    box-shadow: 0;
+    border: 0;
+
   }
 
   .timer__counter-container{
@@ -279,6 +373,14 @@ export default {
       &:nth-child(2){
         font-size: 1.5rem;
       }
+
+      &:disabled{
+        background-color: #474747;
+      }
+    }
+
+    .paused{
+      background-color: #d6c45e;
     }
   }
   

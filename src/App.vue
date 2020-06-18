@@ -1,12 +1,11 @@
 <template>
   <div id="app">
     <dark-mode-button />
-
     <h1>
       CHESS TIMER
     </h1>
     <h2>
-      SPACE - switch between players, ESC - finish game (checkmate, draw)
+      SPACE - switch between players, ENTER - finish game (checkmate, draw)
     </h2>
 
     <timer />
@@ -25,7 +24,13 @@ export default {
     Timer,
     DarkModeButton,
     SiteFooter
-  }
+  },
+  data(){
+    return{
+      isDarkMode: false,
+    }
+  },
+
 }
 </script>
 

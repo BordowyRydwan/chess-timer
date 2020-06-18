@@ -12,6 +12,10 @@ export default{
   },
 
   switchTurn({ commit }){
-    commit('setTurn');
+    commit('switchTurn');
+  },
+
+  resetTurns({ commit }){
+    commit('resetTurns')
   }
 }

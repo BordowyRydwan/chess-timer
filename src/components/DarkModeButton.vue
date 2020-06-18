@@ -1,5 +1,5 @@
 <template>
-  <button>
+  <button @click="toggleDarkMode">
     <img :src="require('../assets/darkmode_btn.png')" alt="GitHub">
   </button>
 </template>
@@ -7,6 +7,11 @@
 <script>
 export default {
   name: 'DarkModeButton',
+  methods: {
+    toggleDarkMode: function () {
+      this.$parent.isDarkMode = !this.$parent.isDarkMode
+    }
+  }
 }
 </script>
 

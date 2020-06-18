@@ -36,7 +36,22 @@ export default {
   },
   
   switchTurn(state){
-      state.turnPlayer2 = state.turnPlayer1;
-      state.turnPlayer1 = !state.turnPlayer1;
+    if(state.turnPlayer1 === true){
+      state.turnPlayer1 = false;
+      state.turnPlayer2 = true;
+    }
+    else if(state.turnPlayer2 === true){
+      state.turnPlayer2 = false;
+      state.turnPlayer1 = true;
+    }
+    else{
+      state.turnPlayer2 = false;
+      state.turnPlayer1 = true;
+    }
+  },
+
+  resetTurns(state){
+    state.turnPlayer1 = false;
+    state.turnPlayer2 = false;
   }
 }
