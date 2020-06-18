@@ -25,8 +25,8 @@ export default {
 
 <style lang="scss" scoped>
   footer{
-    position: fixed;
-    bottom: 0;
+    /*position: fixed;
+    bottom: 0;*/
     width: 100%;
 
     display: flex;
@@ -64,6 +64,12 @@ export default {
     p{
       color: rgb(241, 241, 241);
       transition-duration: 0.1s;
+    }
+  }
+
+  @media (max-height: 500px){
+    footer{
+      display: none;
     }
   }
 </style>

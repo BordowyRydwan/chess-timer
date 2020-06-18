@@ -30,7 +30,7 @@ export default {
         return 'darkmode_btn.png';
       }
     }
-  }
+  },
 }
 </script>
 
@@ -48,10 +48,22 @@ export default {
     border: 0;
 
     cursor: pointer;
+    transition-duration: .2s;
+
+    &:hover{
+      transform: scale(0.95);
+    }
   }
 
   img{
     width: 80px;
     height: 80px;
+  }
+
+  @media (max-width: 800px){
+    button, img{
+      width: 50px;
+      height: 50px;
+    }
   }
 </style>

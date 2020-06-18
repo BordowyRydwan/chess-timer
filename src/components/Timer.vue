@@ -1,5 +1,9 @@
 <template>
-  <div class="timer">
+  <div v-if="!isLandscape" :class="$parent.isDarkMode ? 'timer--no-landscape--dark' : 'timer--no-landscape'">
+    <p>Switch your viewport into landscape</p>
+    <p>Enjoy your play ;)</p>
+  </div>
+  <div class="timer" v-else>
     <button class="timer__switch" name="left" :disabled="turnPlayer1 || isPaused || !isStarted" @click="switchTurn()"></button>
     <button class="timer__switch" name="right" :disabled="turnPlayer2 || isPaused || !isStarted" @click="switchTurn()"></button>
 
@@ -14,8 +18,8 @@
     <div class="timer__buttons">
       <button name="time_substract" @click="subtractMinute" :disabled="turnPlayer1 || turnPlayer2">-</button>
       <button name="time_add" @click="addMinute" :disabled="turnPlayer1 || turnPlayer2">+</button>
-      <button name="pause" @click="handleStartButton" :class="isPaused ? 'paused' : ''">⏯︎</button>
-      <button name="stop" @click="resetGame">⏹︎</button>
+      <button name="pause" @click="handleStartButton" :class="isPaused ? 'paused' : ''">&#x23EF;</button>
+      <button name="stop" @click="resetGame">&#x23F9;</button>
     </div>
   </div>
 </template>
@@ -35,6 +39,8 @@ export default {
       intervalRight: null,
       isPaused: false,
       isStarted: false,
+      windowHeight: window.innerHeight,
+      windowWidth: window.innerWidth
     }
   },
   computed: {
@@ -46,6 +52,10 @@ export default {
         'turnPlayer2',
       ]
     ),
+
+    isLandscape: function () {
+      return this.windowWidth > this.windowHeight;
+    },
 
     displayTimeLeft: function () {
       return this.timeFromMiliseconds(this.timeLeft).time;
@@ -211,8 +221,8 @@ export default {
       const button = document.querySelector('.timer__switch[name="left"]');
 
       if(this.turnPlayer1 === true){
-        button.style.height = "20px";
-        button.style.top = "-20px"
+        button.style.height = "10px";
+        button.style.top = "-10px"
 
         clearInterval(this.intervalRight);
 
@@ -224,8 +234,8 @@ export default {
         }, 10);
         }
       else{
-        button.style.height = '50px';
-        button.style.top = "-50px"
+        button.style.height = '40px';
+        button.style.top = "-40px"
       }
 
     },
@@ -234,8 +244,8 @@ export default {
       const button = document.querySelector('.timer__switch[name="right"]');
 
       if(this.turnPlayer2 === true){
-        button.style.height = "20px";
-        button.style.top = "-20px"
+        button.style.height = "10px";
+        button.style.top = "-10px"
 
         clearInterval(this.intervalLeft);
 
@@ -247,8 +257,8 @@ export default {
         }, 10);
       }
       else{
-        button.style.height = "50px";
-        button.style.top = "-50px"
+        button.style.height = "40px";
+        button.style.top = "-40px"
       }
 
     }
@@ -267,6 +277,11 @@ export default {
         this.resetGame();
       }
     });
+
+    window.addEventListener('resize', () => {
+      this.windowWidth = window.innerWidth;
+      this.windowHeight = window.innerHeight;
+    });
   }
 }
 </script>
@@ -279,18 +294,40 @@ export default {
     align-items: center;
     justify-content: space-evenly;
 
-    width: 65vw;
+    width: 70vw;
     height: 45vh;
 
     background-color: #5B5B5B;
     position: relative;
 
-    margin-top: 18vh;
+    margin-top: 10vh;
+  }
+
+  .timer--no-landscape{
+    text-align: center;
+
+    p{
+      margin: 5px;
+      color: #313030;
+
+      font-size: 4vw;
+    }
+  }
+
+  .timer--no-landscape--dark{
+    text-align: center;
+
+    p{
+      margin: 5px;
+      color: #dbdbdb;
+
+      font-size: 4vw;
+    }
   }
 
   .timer__switch{
     width: 20%;
-    height: 50px;
+    height: 40px;
 
     background-color: #C70808;
     
@@ -308,13 +345,13 @@ export default {
 
   .timer__switch[name="left"]{
     position: absolute;
-    top: -50px;
+    top: -40px;
     left: 10%;
   }
 
   .timer__switch[name="right"]{
     position: absolute;
-    top: -50px;
+    top: -40px;
     right: 10%;
   }
 
@@ -334,12 +371,12 @@ export default {
       justify-content: center;
       align-items: center;
 
-      font-size: 3rem;
+      font-size: 4vw;
     }
   }
 
   .miliseconds{
-    font-size: 0.8rem;
+    font-size: 1.5vw;
     text-decoration: underline;
     transform: translateY(-50%);
   }
@@ -351,7 +388,7 @@ export default {
 
     width: 90%;
     height: 20%;
-    padding: 15px 0;
+    padding: 12px 0;
 
     background-color: #343434;
 
@@ -374,10 +411,12 @@ export default {
       &:nth-child(1),
       &:nth-child(2){
         font-size: 1.5rem;
+        font-weight: bold;
       }
 
       &:disabled{
         background-color: #636363;
+        cursor: default;
       }
 
       cursor: pointer;
@@ -387,6 +426,32 @@ export default {
       background-color: #d6c45e;
     }
   }
-  
 
+  @media (max-width: 800px){
+    .timer{
+      width: 85vw;
+    }
+  }
+  
+  @media (max-height: 500px){
+    .timer{
+      height: 55vh;
+      margin-bottom: 20px;
+    }
+  }
+
+  @media (max-height: 400px){
+    .timer__buttons{
+      padding: 6px 0;
+
+      button{
+        font-size: 0.8rem;
+
+        &:nth-child(1),
+        &:nth-child(2){
+          font-size: 1.2rem;
+        }
+      }
+    }  
+  }
 </style>

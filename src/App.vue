@@ -1,13 +1,14 @@
 <template>
   <div id="app">
     <dark-mode-button :isDarkMode="isDarkMode" />
-    <h1>
-      CHESS TIMER
-    </h1>
-    <h2>
-      SPACE - switch between players, ENTER - finish game (checkmate, draw)
-    </h2>
-
+    <header>
+      <h1>
+        CHESS TIMER
+      </h1>
+      <h2>
+        SPACE - switch between players, ENTER - finish game (checkmate, draw)
+      </h2>
+    </header>
     <timer />
     <site-footer />
   </div>
@@ -37,8 +38,7 @@ export default {
       document.querySelector('#app').classList.toggle('app--dark');
       document.querySelector('footer').classList.toggle('footer--dark');
     }
-  }
-
+  },
 }
 </script>
 
@@ -61,6 +61,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: space-between;
 
   transition-duration: 0.1s;
 }
@@ -93,5 +94,35 @@ h2{
 
 .app--dark{
   background-color: rgb(49, 49, 49);
+}
+
+@media (max-height: 500px){
+  footer{
+    display: none;
+  }
+
+  h1{
+    font-size: 2.5rem;
+  }
+
+  h2{
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 800px){
+  h1{
+    font-size: 2.5rem;
+  }
+
+  h2{
+    display: none;
+  }
+}
+
+@media (max-height: 300px){
+  h1{
+    visibility: hidden;
+  }
 }
 </style>
